@@ -1,0 +1,81 @@
+plugins {
+    id("com.android.library")
+    id("org.jetbrains.kotlin.android")
+    id("com.google.devtools.ksp")
+    id("com.google.dagger.hilt.android")
+}
+
+android {
+    namespace "com.spitzer.data"
+    compileSdk compile_sdk_version
+
+    defaultConfig {
+        minSdk min_sdk_version
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
+
+        buildConfigField "String", "BASE_URL", '"https://api.spoonacular.com"'
+
+        Properties properties = new Properties()
+        properties.load(project.rootProject.file("local.properties").newDataInputStream())
+
+        // Set API keys in BuildConfig
+        buildConfigField "String", "RECIPES_API_KEY", "${properties.getProperty("RECIPES_API_KEY")}"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles(
+                    getDefaultProguardFile("proguard-android-optimize.txt"),
+                    "proguard-rules.pro"
+            )
+        }
+    }
+    compileOptions {
+        sourceCompatibility java_version
+        targetCompatibility java_version
+    }
+    kotlinOptions {
+        jvmTarget = jvm_target_version
+    }
+    buildFeatures {
+        buildConfig = true
+    }
+}
+
+dependencies {
+    // Project
+    implementation project(':model')
+
+    // Retrofit
+    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-moshi:$retrofit_version"
+
+    // Moshi
+    implementation "com.squareup.moshi:moshi:$moshi_version"
+    implementation "com.squareup.moshi:moshi-kotlin:$moshi_version"
+    implementation "com.squareup.moshi:moshi-adapters:$moshi_version"
+
+    // Essentials
+    implementation "androidx.core:core-ktx:$android_core_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
+
+    // DI
+    api "com.google.dagger:hilt-android:$hilt_version"
+    ksp "com.google.dagger:hilt-android-compiler:$hilt_version"
+
+    // Room
+    implementation "androidx.room:room-ktx:$androidx_room_version"
+    implementation "androidx.room:room-runtime:$androidx_room_version"
+    ksp "androidx.room:room-compiler:$androidx_room_version"
+
+    // Kotlin serializer
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinx_json_serialiser_version"
+
+    // Testing
+    testImplementation("junit:junit:$junit_version")
+    androidTestImplementation("androidx.test.ext:junit:$ext_junit_version")
+    androidTestImplementation("androidx.test.espresso:espresso-core:$espresso_core_version")
+}

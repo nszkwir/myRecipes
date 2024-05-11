@@ -1,0 +1,44 @@
+plugins {
+    id("com.android.library")
+    id("org.jetbrains.kotlin.android")
+    id("com.google.devtools.ksp")
+    id("com.google.dagger.hilt.android")
+}
+
+android {
+    namespace "com.spitzer.model"
+    compileSdk compile_sdk_version
+
+    defaultConfig {
+        minSdk min_sdk_version
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles(
+                    getDefaultProguardFile("proguard-android-optimize.txt"),
+                    "proguard-rules.pro"
+            )
+        }
+    }
+    compileOptions {
+        sourceCompatibility java_version
+        targetCompatibility java_version
+    }
+    kotlinOptions {
+        jvmTarget = jvm_target_version
+    }
+}
+
+dependencies {
+    // Essentials
+    implementation "androidx.core:core-ktx:$android_core_version"
+
+    // DI
+    api "com.google.dagger:hilt-android:$hilt_version"
+    ksp "com.google.dagger:hilt-android-compiler:$hilt_version"
+}

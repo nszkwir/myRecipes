@@ -1,0 +1,62 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+buildscript {
+    ext {
+        // Java
+        java_version = JavaVersion.VERSION_1_8
+
+        // Android
+        compile_sdk_version = 34
+        min_sdk_version = 28
+        target_sdk_version = 33
+
+        // Kotlin
+        jvm_target_version = '1.8'
+        kotlin_compiler_extension_version = '1.5.7'
+
+        // Essentials
+        lifecycle_version = '2.7.0'
+        activity_compose_version = '1.9.0'
+        nav_compose_version = '2.7.7'
+        compose_bom_version = '2024.05.00'
+        android_core_version = '1.13.1'
+        coroutines_version = '1.7.3'
+        coil_compose_version = '2.6.0'
+        splash_screen_version = '1.2.0-alpha01'
+        crypto_version = '1.0.0'
+
+        // Extras
+        in_app_review_version = '2.0.1'
+        google_maps_version = '4.1.1'
+        adyen_drop_in_version = '5.3.1'
+
+        // DI
+        hilt_version = '2.48.1'
+        hilt_navigation_version = '1.2.0'
+
+        // Third Parties UI
+        lottie_version = '6.1.0'
+
+        // Third Parties Network
+        retrofit_version = '2.9.0'
+        moshi_version = '1.15.0'
+
+        // Room
+        androidx_room_version = '2.6.1'
+
+        // Kotlin Serializer
+        kotlinx_json_serialiser_version = '1.6.0'
+
+        // Testing
+        junit_version = '4.13.2'
+        ext_junit_version = '1.1.5'
+        espresso_core_version = '3.5.1'
+    }
+}
+
+plugins {
+    id 'com.android.application' version '8.1.2' apply false
+    id 'org.jetbrains.kotlin.android' version '1.9.21' apply false
+    id 'com.google.devtools.ksp' version '1.9.21-1.0.16' apply false
+    id 'com.google.dagger.hilt.android' version '2.49' apply false
+    id 'com.android.library' version '8.1.2' apply false
+}

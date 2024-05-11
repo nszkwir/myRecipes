@@ -1,0 +1,75 @@
+plugins {
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+    id("com.google.devtools.ksp")
+    id("com.google.dagger.hilt.android")
+}
+
+android {
+    namespace "com.spitzer.recipes"
+    compileSdk compile_sdk_version
+
+    defaultConfig {
+        applicationId = "com.spitzer.recipes"
+        minSdk = min_sdk_version
+        targetSdk = target_sdk_version
+        versionCode = 1
+        versionName = "1.0"
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary = true
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            debuggable false
+            proguardFiles(
+                    getDefaultProguardFile("proguard-android-optimize.txt"),
+                    "proguard-rules.pro"
+            )
+        }
+    }
+    compileOptions {
+        sourceCompatibility java_version
+        targetCompatibility java_version
+    }
+    kotlinOptions {
+        jvmTarget = jvm_target_version
+        freeCompilerArgs += "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api"
+
+    }
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion kotlin_compiler_extension_version
+    }
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+}
+
+dependencies {
+    // Project
+    implementation project(':designsystem')
+    implementation project(':data')
+    implementation project(':model')
+    implementation project(':ui:recipe')
+    implementation project(':ui:settings')
+
+    // DI
+    implementation "com.google.dagger:hilt-android:$hilt_version"
+    implementation "androidx.hilt:hilt-navigation-compose:$hilt_navigation_version"
+    ksp "com.google.dagger:hilt-android-compiler:$hilt_version"
+
+    // Splash Screen
+    implementation "androidx.core:core-splashscreen:$splash_screen_version"
+
+    // Testing
+    testImplementation("junit:junit:$junit_version")
+}

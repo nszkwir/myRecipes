@@ -1,0 +1,81 @@
+plugins {
+    id("com.android.library")
+    id("org.jetbrains.kotlin.android")
+    id("com.google.devtools.ksp")
+    id("com.google.dagger.hilt.android")
+}
+
+android {
+    namespace 'com.spitzer.designsystem'
+    compileSdk compile_sdk_version
+
+    defaultConfig {
+        minSdk min_sdk_version
+        targetSdk target_sdk_version
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary true
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility java_version
+        targetCompatibility java_version
+    }
+    kotlinOptions {
+        jvmTarget = jvm_target_version
+        freeCompilerArgs += "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api"
+    }
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion kotlin_compiler_extension_version
+    }
+    packagingOptions {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+    }
+}
+
+dependencies {
+    // Jetpack Compose
+    api "androidx.navigation:navigation-compose:$nav_compose_version"
+    api "androidx.activity:activity-compose:$activity_compose_version"
+    api platform("androidx.compose:compose-bom:$compose_bom_version")
+    api "androidx.compose.material:material"
+    api "androidx.compose.runtime:runtime"
+    api "androidx.compose.material3:material3"
+    api "androidx.compose.runtime:runtime-livedata"
+    api "androidx.compose.ui:ui"
+    api "androidx.compose.ui:ui-graphics"
+    api "androidx.compose.ui:ui-tooling-preview"
+
+    // Essentials
+    api "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
+    api "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
+    api "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
+    api "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycle_version"
+    api "androidx.core:core-ktx:$android_core_version"
+
+    // DI
+    api "com.google.dagger:hilt-android:$hilt_version"
+    api "androidx.hilt:hilt-navigation-compose:$hilt_navigation_version"
+    debugImplementation 'androidx.compose.ui:ui-tooling:1.6.7'
+    ksp "com.google.dagger:hilt-android-compiler:$hilt_version"
+
+    // Third Parties
+    implementation "com.airbnb.android:lottie-compose:$lottie_version"
+    api "io.coil-kt:coil-compose:$coil_compose_version"
+}
