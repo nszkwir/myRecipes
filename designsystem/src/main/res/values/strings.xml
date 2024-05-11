@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error_noInternet_title">No Internet Connection</string>
+    <string name="error_noInternet_subtitle">Please check that you have internet connection and try again later</string>
+    <string name="error_generic_title">Ups, something went wrong</string>
+    <string name="error_generic_subtitle">Please try again later</string>
+    <string name="try_again_title">Try Again</string>
+    <string name="back">Back</string>
+    <string name="close">Close</string>
+    <string name="clear_title">Clear</string>
+    <string name="confirm_title">Confirm</string>
+</resources>
