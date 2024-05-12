@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">recipes</string>
+    <string name="bottom_nav_bar_recipes">Recipes</string>
+    <string name="bottom_nav_bar_settings">Settings</string>
+</resources>
