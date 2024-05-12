@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recipe_list_screen_title">Recipes</string>
+    <string name="recipe_list_screen_search_by_name_placeholder">Search by name</string>
+    <string name="recipe_list_screen_search_by_ingredients_placeholder">Search by ingredients</string>
+    <string name="recipe_list_screen_search_content_description">Search</string>
+    <string name="recipe_list_screen_search_close_content_description">Close Search</string>
+    <string name="recipe_list_screen_see_card_details_content_description">See $1%s details</string>
+    <string name="recipe_list_screen_funnel_search_criteria_title">Search Criteria by</string>
+    <string name="recipe_list_screen_funnel_sort_criteria_title">Sort by</string>
+    <string name="recipe_list_screen_funnel_sort_order_title">Sort by order</string>
+
+    <string name="search_criteria_name_title">Name</string>
+    <string name="search_criteria_ingredients_title">Ingredients</string>
+
+    <string name="sort_criteria_relevance_title">Relevance</string>
+    <string name="sort_criteria_popularity_title">Popularity</string>
+    <string name="sort_criteria_preparation_time_title">Preparation Time</string>
+    <string name="sort_criteria_calories_title">Calories</string>
+
+    <string name="sort_order_ascending_title">Ascending</string>
+    <string name="sort_order_descending_title">Descending</string>
+
+    <string name="recipe_details_screen_instructions">Instructions</string>
+    <string name="recipe_details_screen_ingredients">Ingredients</string>
+    <string name="recipe_details_screen_ready_in_minutes">Ready in: %s minutes</string>
+    <string name="recipe_details_screen_score">Score: %s</string>
+    <string name="recipe_details_screen_servings">Servings: %s</string>
+    <string name="recipe_details_screen_vegan">Vegan</string>
+    <string name="recipe_details_screen_calories">Calories: %s</string>
+    <string name="recipe_details_screen_favorite">Favorite</string>
+    <string name="recipe_details_screen_no_favorite">Not favorite</string>
+    <string name="recipe_details_screen_add_to_favorites">Add to favorites</string>
+    <string name="recipe_details_screen_remove_from_favorites">Remove from favorites</string>
+
+</resources>
