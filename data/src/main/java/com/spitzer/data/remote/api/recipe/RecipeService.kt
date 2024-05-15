@@ -2,12 +2,14 @@ package com.spitzer.data.remote.api.recipe
 
 import com.spitzer.data.di.AppDispatchers
 import com.spitzer.data.di.Dispatcher
+import com.spitzer.data.remote.api.recipe.dto.RecipeDetailsResponse
 import com.spitzer.data.remote.api.recipe.dto.RecipePageResponse
 import com.spitzer.entity.network.NetworkError
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 import java.net.ConnectException
 import javax.inject.Inject
@@ -25,6 +27,13 @@ interface RecipeAPIService {
         @Query("sortDirection") sortDirection: String
     ): Response<RecipePageResponse>
 
+    @GET("recipes/{id}/information")
+    suspend fun fetchRecipeDetails(
+        @Path("id") id: Long,
+        @Query("includeNutrition") includeNutrition: Boolean = false,
+        @Query("addWinePairing") addWinePairing: Boolean = false,
+        @Query("addTasteData") addTasteData: Boolean = false,
+    ): Response<RecipeDetailsResponse>
 }
 
 interface RecipeService {
@@ -37,6 +46,9 @@ interface RecipeService {
         sortOrder: String
     ): RecipePageResponse
 
+    suspend fun fetchRecipeDetails(
+        id: Long
+    ): RecipeDetailsResponse
 }
 
 internal class RecipeServiceImpl @Inject constructor(
@@ -61,6 +73,27 @@ internal class RecipeServiceImpl @Inject constructor(
                     addRecipeInformation = true,
                     sort = sortCriteria,
                     sortDirection = sortOrder
+                )
+                if (response.isSuccessful) {
+                    response.body() ?: throw NetworkError.Unknown
+                } else {
+                    throw NetworkError.Unknown
+                }
+            } catch (e: NetworkError.NoInternet) {
+                throw e
+            } catch (e: ConnectException) {
+                throw NetworkError.NoInternet
+            } catch (e: Exception) {
+                throw NetworkError.Unknown
+            }
+        }
+    }
+
+    override suspend fun fetchRecipeDetails(id: Long): RecipeDetailsResponse {
+        return withContext(ioDispatcher) {
+            try {
+                val response = apiService.fetchRecipeDetails(
+                    id = id
                 )
                 if (response.isSuccessful) {
                     response.body() ?: throw NetworkError.Unknown
