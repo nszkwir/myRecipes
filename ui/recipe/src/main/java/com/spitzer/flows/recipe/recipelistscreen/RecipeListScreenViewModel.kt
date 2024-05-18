@@ -7,13 +7,18 @@ import android.os.Looper
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.spitzer.designsystem.components.Action
+import com.spitzer.designsystem.components.CallToActionViewState
+import com.spitzer.designsystem.components.CallToActionViewStyle
 import com.spitzer.designsystem.components.CardViewState
+import com.spitzer.designsystem.components.PillViewState
 import com.spitzer.designsystem.components.error.ErrorScreen
 import com.spitzer.domain.usecase.recipe.FetchNextRecipePageWhenNeededError
 import com.spitzer.domain.usecase.recipe.FetchNextRecipePageWhenNeededUseCase
 import com.spitzer.domain.usecase.recipe.GetRecipeListUseCase
 import com.spitzer.domain.usecase.recipe.RefreshRecipeListUseCase
 import com.spitzer.domain.usecase.recipe.RefreshRecipeListUseCaseError
+import com.spitzer.domain.usecase.recipe.SearchRecipePageUseCase
+import com.spitzer.domain.usecase.recipe.SearchRecipePageUseCaseError
 import com.spitzer.domain.utils.WrappedResult
 import com.spitzer.entity.recipe.Recipe
 import com.spitzer.entity.recipe.RecipePage
@@ -48,7 +53,8 @@ class RecipeListScreenViewModel @Inject constructor(
     @ApplicationContext private val applicationContext: Context,
     private val getRecipeListUseCase: GetRecipeListUseCase,
     private val refreshRecipeListUseCase: RefreshRecipeListUseCase,
-    private val fetchNextRecipePageWhenNeededUseCase: FetchNextRecipePageWhenNeededUseCase
+    private val fetchNextRecipePageWhenNeededUseCase: FetchNextRecipePageWhenNeededUseCase,
+    private val searchRecipeListUseCase: SearchRecipePageUseCase
 ) : ViewModel() {
 
     companion object {
@@ -97,7 +103,7 @@ class RecipeListScreenViewModel @Inject constructor(
         _viewState.update { currentState ->
             currentState.copy(
                 cardListViewStates = mapCardListViewStates(recipeList = recipePage.list),
-                searchBarViewState = null,
+                searchBarViewState = mapSearchBarViewState(),
                 onPrefetchItemsAtIndex = {
                     getRecipeList(elementIndex = it)
                 }
@@ -127,7 +133,285 @@ class RecipeListScreenViewModel @Inject constructor(
             }
         }
     }
-    
+
+    private fun mapSearchBarViewState(): RecipeListScreenSearchBarViewState {
+        fun removeBottomSheet() {
+            _viewState.update { currentState ->
+                currentState.copy(bottomSheetViewState = null)
+            }
+        }
+
+        fun hideBottomSheet() {
+            _viewState.update { currentState ->
+                currentState.copy(
+                    bottomSheetViewState = currentState.bottomSheetViewState?.copy(
+                        shouldHide = true
+                    )
+                )
+            }
+        }
+
+        fun mapIsFunnelOn(): Boolean {
+            return !(dataStore.selectedSearchCriteria == SearchCriteria.NAME &&
+                    dataStore.selectedSortCriteria == SortCriteria.RELEVANCE &&
+                    dataStore.selectedSortOrder == SortOrder.DESCENDING)
+        }
+
+        fun inputChanged() {
+            _viewState.update { currentState ->
+                currentState.copy(
+                    searchBarViewState = mapSearchBarViewState()
+                )
+            }
+            refreshRecipeList()
+        }
+
+        fun showBottomSheet() {
+            val temporalDataStore = dataStore.copy()
+
+            fun clearSearchFilters() {
+                dataStore.selectedSearchCriteria = SearchCriteria.NAME
+                dataStore.selectedSortCriteria = SortCriteria.RELEVANCE
+                dataStore.selectedSortOrder = SortOrder.DESCENDING
+                hideBottomSheet()
+                inputChanged()
+            }
+
+            fun confirmSearchFilters() {
+                dataStore = temporalDataStore.copy()
+                hideBottomSheet()
+                inputChanged()
+            }
+
+            fun mapSearchCriteriaTitle(searchCriteria: SearchCriteria): String {
+                return when (searchCriteria) {
+                    SearchCriteria.NAME -> applicationContext.getString(R.string.search_criteria_name_title)
+                    SearchCriteria.INGREDIENTS -> applicationContext.getString(R.string.search_criteria_ingredients_title)
+                }
+            }
+
+            fun mapSortCriteriaTitle(sortCriteria: SortCriteria): String {
+                return when (sortCriteria) {
+                    SortCriteria.RELEVANCE -> applicationContext.getString(R.string.sort_criteria_relevance_title)
+                    SortCriteria.POPULARITY -> applicationContext.getString(R.string.sort_criteria_popularity_title)
+                    SortCriteria.PREPARATION_TIME -> applicationContext.getString(R.string.sort_criteria_preparation_time_title)
+                    SortCriteria.CALORIES -> applicationContext.getString(R.string.sort_criteria_calories_title)
+                }
+            }
+
+            fun mapSortOrderTitle(sortOrder: SortOrder): String {
+                return when (sortOrder) {
+                    SortOrder.DESCENDING -> applicationContext.getString(R.string.sort_order_descending_title)
+                    SortOrder.ASCENDING -> applicationContext.getString(R.string.sort_order_ascending_title)
+                }
+            }
+
+            fun mapBottomSheetViewState(): RecipeListScreenBottomSheetViewState {
+                fun inputChanged() {
+                    _viewState.update { currentState ->
+                        currentState.copy(bottomSheetViewState = mapBottomSheetViewState())
+                    }
+                }
+
+                return RecipeListScreenBottomSheetViewState(
+                    funnelViewState = RecipeListScreenFunnelViewState(
+                        searchCriteriaTitle = applicationContext.getString(R.string.recipe_list_screen_funnel_search_criteria_title),
+                        searchCriteriaPillsViewStates = SearchCriteria.values()
+                            .map { searchCriteria ->
+                                PillViewState(
+                                    text = mapSearchCriteriaTitle(searchCriteria),
+                                    isSelected = temporalDataStore.selectedSearchCriteria == searchCriteria,
+                                    onSelectionChange = {
+                                        temporalDataStore.selectedSearchCriteria = searchCriteria
+                                        inputChanged()
+                                    }
+                                )
+                            },
+                        sortCriteriaTitle = applicationContext.getString(R.string.recipe_list_screen_funnel_sort_criteria_title),
+                        sortCriteriaPillsViewStates = SortCriteria.values().map { sortCriteria ->
+                            PillViewState(
+                                text = mapSortCriteriaTitle(sortCriteria),
+                                isSelected = temporalDataStore.selectedSortCriteria == sortCriteria,
+                                onSelectionChange = {
+                                    temporalDataStore.selectedSortCriteria = sortCriteria
+                                    inputChanged()
+                                }
+                            )
+                        },
+                        sortOrderTitle = applicationContext.getString(R.string.recipe_list_screen_funnel_sort_order_title),
+                        sortOrderPillsViewStates = SortOrder.values().map { sortOrder ->
+                            PillViewState(
+                                text = mapSortOrderTitle(sortOrder),
+                                isSelected = temporalDataStore.selectedSortOrder == sortOrder,
+                                onSelectionChange = {
+                                    temporalDataStore.selectedSortOrder = sortOrder
+                                    inputChanged()
+                                }
+                            )
+                        },
+                        clearActionViewState = CallToActionViewState(
+                            title = applicationContext.getString(com.spitzer.designsystem.R.string.clear_title),
+                            style = CallToActionViewStyle.WARNING,
+                            onTap = {
+                                clearSearchFilters()
+                            }
+                        ),
+                        confirmActionViewState = CallToActionViewState(
+                            title = applicationContext.getString(com.spitzer.designsystem.R.string.confirm_title),
+                            onTap = {
+                                confirmSearchFilters()
+                            }
+                        )
+                    ),
+                    onDismiss = {
+                        removeBottomSheet()
+                    }
+                )
+            }
+
+            _viewState.update { currentState ->
+                currentState.copy(
+                    bottomSheetViewState = mapBottomSheetViewState()
+                )
+            }
+        }
+
+        fun mapPlaceholderText(): String {
+            return when (dataStore.selectedSearchCriteria) {
+                SearchCriteria.NAME -> {
+                    applicationContext.getString(R.string.recipe_list_screen_search_by_name_placeholder)
+                }
+
+                SearchCriteria.INGREDIENTS -> {
+                    applicationContext.getString(R.string.recipe_list_screen_search_by_ingredients_placeholder)
+                }
+            }
+        }
+
+        fun openSearch() {
+            _viewState.update { currentState ->
+                currentState.copy(
+                    searchBarViewState = currentState.searchBarViewState?.copy(
+                        isSearchActive = true
+                    )
+                )
+            }
+        }
+
+        fun closeSearch() {
+            _viewState.update { currentState ->
+                currentState.copy(
+                    searchBarViewState = currentState.searchBarViewState?.copy(
+                        isSearchActive = false
+                    )
+                )
+            }
+        }
+
+        fun updateQuery(query: String) {
+            _viewState.update { currentState ->
+                currentState.copy(
+                    searchBarViewState = currentState.searchBarViewState?.copy(
+                        query = query
+                    )
+                )
+            }
+        }
+
+        return RecipeListScreenSearchBarViewState(
+            isSearchActive = false,
+            query = "",
+            placeholder = mapPlaceholderText(),
+            isFunnelOn = mapIsFunnelOn(),
+            onFunnelTap = {
+                showBottomSheet()
+            },
+            onQueryChange = {
+                updateQuery(it)
+            },
+            onSearch = {
+                searchRecipeList(it)
+            },
+            onOpenSearch = {
+                openSearch()
+            },
+            onCloseSearch = {
+                closeSearch()
+            }
+        )
+    }
+
+    private fun searchRecipeList(query: String) {
+        fun showNoInternetConnectionError() {
+            _viewState.update { currentState ->
+                currentState.copy(
+                    title = applicationContext.getString(com.spitzer.designsystem.R.string.error_noInternet_title),
+                    errorViewState = ErrorScreen.noInternetConnection(
+                        applicationContext = applicationContext,
+                        onTryAgainButtonTap = { searchRecipeList(query = query) },
+                        onCloseButtonTap = {
+                            removeErrorView()
+                        }
+                    )
+                )
+            }
+        }
+
+        fun showGenericError() {
+            _viewState.update { currentState ->
+                currentState.copy(
+                    title = applicationContext.getString(com.spitzer.designsystem.R.string.error_generic_title),
+                    errorViewState = ErrorScreen.generic(
+                        applicationContext = applicationContext,
+                        onTryAgainButtonTap = { searchRecipeList(query = query) },
+                        onCloseButtonTap = {
+                            removeErrorView()
+                        }
+                    )
+                )
+            }
+        }
+
+        fun showSearchResults(list: List<Recipe>) {
+            _viewState.update { currentState ->
+                currentState.copy(
+                    searchBarViewState = currentState.searchBarViewState?.copy(
+                        cardListViewStates = mapCardListViewStates(list)
+                    )
+                )
+            }
+        }
+
+        displayLoadingAnimation(true)
+
+        viewModelScope.launch {
+            val result = searchRecipeListUseCase(
+                query = query,
+                searchCriteria = dataStore.selectedSearchCriteria,
+                sortCriteria = dataStore.selectedSortCriteria,
+                sortOrder = dataStore.selectedSortOrder
+            )
+            when (result) {
+                is WrappedResult.Error -> {
+                    when (result.exception) {
+                        SearchRecipePageUseCaseError.NoInternet -> {
+                            showNoInternetConnectionError()
+                        }
+
+                        SearchRecipePageUseCaseError.Generic -> {
+                            showGenericError()
+                        }
+                    }
+                }
+
+                is WrappedResult.Success -> {
+                    showSearchResults(result.data)
+                }
+            }
+            displayLoadingAnimation(false)
+        }
+    }
+
     private fun refreshRecipeList() {
         fun showNoInternetConnectionError(showsCloseButton: Boolean) {
             _viewState.update { currentState ->
