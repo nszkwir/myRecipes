@@ -28,7 +28,14 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainCoordinator()
+                    val output: (MainCoordinatorOutput) -> Unit = {
+                        when (it) {
+                            is MainCoordinatorOutput.DarkModeToggle -> {
+                                isDarkThemeEnabled = it.enabled
+                            }
+                        }
+                    }
+                    MainCoordinator(coordinatorOutput = output)
                 }
             }
         }

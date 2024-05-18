@@ -11,6 +11,9 @@ import androidx.navigation.compose.rememberNavController
 import com.spitzer.flows.recipe.RecipeCoordinator
 import com.spitzer.flows.recipe.RecipeCoordinatorRoute
 import com.spitzer.recipes.R
+import com.spitzer.settings.SettingsCoordinator
+import com.spitzer.settings.SettingsCoordinatorOutput
+import com.spitzer.settings.SettingsCoordinatorRoute
 
 const val MainCoordinatorRoute = "MainCoordinatorRoute"
 
@@ -23,12 +26,13 @@ sealed class MainCoordinatorOutput {
 }
 
 @Composable
-fun MainCoordinator() {
+fun MainCoordinator(coordinatorOutput: (MainCoordinatorOutput) -> Unit) {
 
     val rootNavController: NavHostController = rememberNavController()
 
     val navItems: List<BottomNavItem> = listOf(
-        BottomNavItem(RecipeCoordinatorRoute, R.string.bottom_nav_bar_recipes, R.drawable.dish)
+        BottomNavItem(RecipeCoordinatorRoute, R.string.bottom_nav_bar_recipes, R.drawable.dish),
+        BottomNavItem(SettingsCoordinatorRoute, R.string.bottom_nav_bar_settings, R.drawable.settings)
     )
 
     NavHost(
@@ -54,6 +58,18 @@ fun MainCoordinator() {
                 ) {
                     composable(route = RecipeCoordinatorRoute) {
                         RecipeCoordinator()
+                    }
+                    composable(route = SettingsCoordinatorRoute) {
+                        val output: (SettingsCoordinatorOutput) -> Unit = {
+                            when(it) {
+                                is SettingsCoordinatorOutput.DarkModeToggle -> {
+                                    coordinatorOutput(MainCoordinatorOutput.DarkModeToggle(it.enabled))
+                                }
+                            }
+                        }
+                        SettingsCoordinator(
+                            coordinatorOutput = output
+                        )
                     }
                 }
             }

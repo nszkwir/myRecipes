@@ -16,6 +16,7 @@ dependencyResolutionManagement {
 rootProject.name = "recipes"
 include(":app")
 include(":ui:recipe")
+include(":ui:settings")
 include(":designsystem")
 include(":data")
 include(":domain")
