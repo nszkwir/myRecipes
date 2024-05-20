@@ -68,16 +68,23 @@ class RecipeDetailsScreenViewModel @Inject constructor(
 
         fun recipeFavoriteStatusChanged() {
             val isFavorite = !(_viewState.value.recipeDetails?.isFavorite ?: true)
-            _viewState.update { currentState ->
-                currentState.copy(
-                    recipeDetails = currentState.recipeDetails?.copy(
-                        isFavorite = isFavorite
-                    )
-                )
-            }
 
             viewModelScope.launch {
-                setRecipeFavoriteStatusUseCase(id = input.recipeId, isFavorite = isFavorite)
+                val result =
+                    setRecipeFavoriteStatusUseCase(id = input.recipeId, isFavorite = isFavorite)
+                when (result) {
+                    is WrappedResult.Success -> {
+                        _viewState.update { currentState ->
+                            currentState.copy(
+                                recipeDetails = currentState.recipeDetails?.copy(
+                                    isFavorite = isFavorite
+                                )
+                            )
+                        }
+                    }
+
+                    else -> {}
+                }
             }
         }
 

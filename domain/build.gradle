@@ -44,4 +44,8 @@ dependencies {
     // DI
     api "com.google.dagger:hilt-android:$hilt_version"
     ksp "com.google.dagger:hilt-android-compiler:$hilt_version"
+
+    testImplementation("junit:junit:$junit_version")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_version")
+    testImplementation("io.mockk:mockk:$mockk_version")
 }
