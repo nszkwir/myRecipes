@@ -1,7 +1,9 @@
 package com.spitzer.domain.usecase.recipe
 
+import android.database.sqlite.SQLiteException
 import com.spitzer.contracts.RecipeRepository
 import com.spitzer.domain.utils.WrappedResult
+import com.spitzer.entity.network.NetworkError
 import com.spitzer.entity.search.SortCriteria
 import com.spitzer.entity.search.SortOrder
 import javax.inject.Inject
@@ -25,7 +27,13 @@ class FetchNextRecipePageWhenNeededUseCase @Inject constructor(
                 sortOrder = sortOrder
             )
             WrappedResult.Success(Unit)
-        } catch (e: Throwable) {
+        } catch (e: NetworkError) {
+            WrappedResult.Error(FetchNextRecipePageWhenNeededError.Retry)
+        } catch (e: IllegalStateException) {
+            WrappedResult.Error(FetchNextRecipePageWhenNeededError.Retry)
+        } catch (e: SQLiteException) {
+            WrappedResult.Error(FetchNextRecipePageWhenNeededError.Retry)
+        } catch (e: IndexOutOfBoundsException) {
             WrappedResult.Error(FetchNextRecipePageWhenNeededError.Retry)
         }
     }

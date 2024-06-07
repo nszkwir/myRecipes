@@ -1,5 +1,6 @@
 package com.spitzer.domain.usecase.recipe
 
+import android.database.sqlite.SQLiteException
 import com.spitzer.contracts.RecipeRepository
 import com.spitzer.domain.utils.WrappedResult
 import com.spitzer.entity.network.NetworkError
@@ -25,9 +26,16 @@ class RefreshRecipeListUseCase @Inject constructor(
                 sortOrder = sortOrder
             )
             WrappedResult.Success(Unit)
-        } catch (e: NetworkError.NoInternet) {
-            WrappedResult.Error(RefreshRecipeListUseCaseError.NoInternet)
-        } catch (e: Throwable) {
+        } catch (e: NetworkError) {
+            when (e) {
+                is NetworkError.NoInternet -> WrappedResult.Error(RefreshRecipeListUseCaseError.NoInternet)
+                else -> WrappedResult.Error(RefreshRecipeListUseCaseError.Generic)
+            }
+        } catch (e: IllegalStateException) {
+            WrappedResult.Error(RefreshRecipeListUseCaseError.Generic)
+        } catch (e: SQLiteException) {
+            WrappedResult.Error(RefreshRecipeListUseCaseError.Generic)
+        } catch (e: IndexOutOfBoundsException) {
             WrappedResult.Error(RefreshRecipeListUseCaseError.Generic)
         }
     }

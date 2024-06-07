@@ -1,5 +1,6 @@
 package com.spitzer.domain.usecase.recipedetails
 
+import android.database.sqlite.SQLiteException
 import com.spitzer.contracts.RecipeRepository
 import com.spitzer.domain.utils.WrappedResult
 import com.spitzer.entity.network.NetworkError
@@ -20,10 +21,15 @@ class GetRecipeDetailsByIdUseCase @Inject constructor(
         return try {
             val recipeDetails = repository.getRecipeDetailsById(id = id)
             WrappedResult.Success(recipeDetails)
-        } catch (e: NetworkError.NoInternet) {
-            WrappedResult.Error(GetRecipeDetailsByIdUseCaseError.NoInternet)
-        } catch (e: Throwable) {
+        } catch (e: SQLiteException) {
             WrappedResult.Error(GetRecipeDetailsByIdUseCaseError.Generic)
+        } catch (e: IndexOutOfBoundsException) {
+            WrappedResult.Error(GetRecipeDetailsByIdUseCaseError.Generic)
+        } catch (e: NetworkError) {
+            when (e) {
+                is NetworkError.NoInternet -> WrappedResult.Error(GetRecipeDetailsByIdUseCaseError.NoInternet)
+                else -> WrappedResult.Error(GetRecipeDetailsByIdUseCaseError.Generic)
+            }
         }
     }
 }

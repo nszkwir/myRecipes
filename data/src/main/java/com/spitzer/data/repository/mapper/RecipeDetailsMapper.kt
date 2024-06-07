@@ -3,6 +3,7 @@ package com.spitzer.data.repository.mapper
 import com.spitzer.data.remote.api.recipe.dto.RecipeDetailsResponse
 import com.spitzer.data.storage.database.room.dto.StoredRecipeDetails
 import com.spitzer.entity.recipe.RecipeDetails
+import java.net.MalformedURLException
 import java.net.URL
 
 object RecipeDetailsMapper {
@@ -74,7 +75,7 @@ object RecipeDetailsMapper {
     private fun parseUrl(urlString: String?): URL? {
         return try {
             URL(urlString)
-        } catch (e: Exception) {
+        } catch (e: MalformedURLException) {
             null
         }
     }

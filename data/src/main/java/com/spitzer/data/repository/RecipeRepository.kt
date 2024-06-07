@@ -1,5 +1,6 @@
 package com.spitzer.data.repository
 
+import android.database.sqlite.SQLiteException
 import com.spitzer.contracts.RecipeRepository
 import com.spitzer.data.di.AppDispatchers
 import com.spitzer.data.di.Dispatcher
@@ -33,6 +34,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
 import kotlin.math.min
 
@@ -70,41 +72,50 @@ class RecipeRepositoryImpl @Inject constructor(
     init {
         CoroutineScope(SupervisorJob() + ioDispatcher).launch {
             try {
-                searchMutex.lock()
-                val recipes = recipesDao.get()
+                searchMutex.withLock {
+                    val recipes = recipesDao.get()
 
-                // Loading favorite indexes
-                favoriteRecipes = favoriteRecipeDao.get()
-                    .associateBy({ it.id }, { it.favorite }).toMutableMap()
+                    // Loading favorite indexes
+                    favoriteRecipes = favoriteRecipeDao.get()
+                        .associateBy({ it.id }, { it.favorite }).toMutableMap()
 
-                // Getting latest totalResults from SharedPreferences
-                val totalResults = recipePreferences.getRecipeListTotalResults()
+                    // Getting latest totalResults from SharedPreferences
+                    val totalResults = recipePreferences.getRecipeListTotalResults()
 
-                // Mapping and allocating
-                val recipeList: MutableList<Recipe?> = MutableList(totalResults, init = { null })
-                mapFromStoredRecipes(recipes).forEachIndexed { index, recipe ->
-                    recipeList[index] = recipe.copy(
-                        isFavorite = favoriteRecipes[recipe.id] ?: false
+                    // Mapping and allocating
+                    val recipeList: MutableList<Recipe?> =
+                        MutableList(totalResults, init = { null })
+                    mapFromStoredRecipes(recipes).forEachIndexed { index, recipe ->
+                        recipeList[index] = recipe.copy(
+                            isFavorite = favoriteRecipes[recipe.id] ?: false
+                        )
+                    }
+                    _recipePage.value = RecipePage(
+                        list = recipeList,
+                        totalResults = totalResults
                     )
+
+                    // Updating offset
+                    recipePageCurrentOffset = recipes.count()
                 }
-                _recipePage.value = RecipePage(
-                    list = recipeList,
-                    totalResults = totalResults
-                )
-
-                // Updating offset
-                recipePageCurrentOffset = recipes.count()
-
-            } catch (e: Exception) {
-                _recipePage.value = RecipePage(
-                    list = mutableListOf(),
-                    totalResults = 0
-                )
-                recipePageCurrentOffset = 0
-            } finally {
-                searchMutex.unlock()
+            } catch (e: IllegalStateException) {
+                initializeEmptyRecipes()
+            } catch (e: SQLiteException) {
+                initializeEmptyRecipes()
+            } catch (e: IndexOutOfBoundsException) {
+                initializeEmptyRecipes()
+            } catch (e: ClassCastException) {
+                initializeEmptyRecipes()
             }
         }
+    }
+
+    private fun initializeEmptyRecipes() {
+        _recipePage.value = RecipePage(
+            list = mutableListOf(),
+            totalResults = 0
+        )
+        recipePageCurrentOffset = 0
     }
 
     /**
@@ -118,7 +129,9 @@ class RecipeRepositoryImpl @Inject constructor(
         val recipeIndex = _recipePage.value.list.indexOfFirst {
             it?.id == id
         }
-        if (recipeIndex == -1) { return }
+        if (recipeIndex == -1) {
+            return
+        }
         val mutableList = _recipePage.value.list.toMutableList()
         mutableList[recipeIndex] = mutableList[recipeIndex]?.copy(isFavorite = isFavorite)
         _recipePage.update { currentState ->
@@ -218,9 +231,7 @@ class RecipeRepositoryImpl @Inject constructor(
         sortCriteria: SortCriteria,
         sortOrder: SortOrder
     ): List<Recipe> {
-        searchMutex.lock()
-
-        try {
+        searchMutex.withLock {
             val searchByName = if (searchCriteria == SearchCriteria.NAME) query else null
             val searchByIngredients = if (searchCriteria == SearchCriteria.INGREDIENTS) {
                 query.split("[\\s,]+".toRegex()).joinToString(",")
@@ -238,8 +249,6 @@ class RecipeRepositoryImpl @Inject constructor(
                     isFavorite = favoriteRecipes[it.id] ?: false
                 )
             }
-        } finally {
-            searchMutex.unlock()
         }
     }
 

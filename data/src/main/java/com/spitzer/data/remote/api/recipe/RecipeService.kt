@@ -79,12 +79,8 @@ internal class RecipeServiceImpl @Inject constructor(
                 } else {
                     throw NetworkError.Unknown
                 }
-            } catch (e: NetworkError.NoInternet) {
-                throw e
             } catch (e: ConnectException) {
                 throw NetworkError.NoInternet
-            } catch (e: Exception) {
-                throw NetworkError.Unknown
             }
         }
     }
@@ -100,12 +96,8 @@ internal class RecipeServiceImpl @Inject constructor(
                 } else {
                     throw NetworkError.Unknown
                 }
-            } catch (e: NetworkError.NoInternet) {
-                throw e
             } catch (e: ConnectException) {
                 throw NetworkError.NoInternet
-            } catch (e: Exception) {
-                throw NetworkError.Unknown
             }
         }
     }

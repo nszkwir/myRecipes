@@ -7,6 +7,7 @@ import com.spitzer.entity.recipe.Recipe
 import com.spitzer.entity.recipe.RecipePage
 import com.spitzer.entity.search.SortCriteria
 import com.spitzer.entity.search.SortOrder
+import java.net.MalformedURLException
 import java.net.URL
 
 object RecipeMapper {
@@ -29,6 +30,7 @@ object RecipeMapper {
             isFavorite = false
         )
     }
+
     fun mapFromStoredRecipes(storedRecipes: List<StoredRecipe>): List<Recipe> {
         return storedRecipes.map {
             mapFromStoredRecipe(it)
@@ -70,19 +72,22 @@ object RecipeMapper {
         }
     }
 
-    fun mapSortOrder(sortOrder: SortOrder): String {
-        return when (sortOrder) {
-            SortOrder.ASCENDING -> "asc"
-            SortOrder.DESCENDING -> "desc"
-        }
+    fun mapSortOrder(sortOrder: SortOrder): String = when (sortOrder) {
+        SortOrder.ASCENDING -> "asc"
+        SortOrder.DESCENDING -> "desc"
     }
 
 
-    private fun parseUrl(urlString: String?): URL? {
-        return try {
-            URL(urlString)
-        } catch (e: Exception) {
-            null
-        }
+    private fun parseUrl(urlString: String?): URL? = try {
+        URL(urlString)
+    } catch (e: MalformedURLException) {
+        null
     }
 }
+
+fun String?.parseToUrl2() = try {
+    URL(this)
+} catch (e: MalformedURLException) {
+    null
+}
+

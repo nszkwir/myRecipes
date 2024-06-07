@@ -35,8 +35,7 @@ class SearchRecipePageUseCase @Inject constructor(
             WrappedResult.Success(emptyList())
         } catch (e: NetworkError.NoInternet) {
             WrappedResult.Error(SearchRecipePageUseCaseError.NoInternet)
-        } catch (e: Throwable) {
-            WrappedResult.Error(SearchRecipePageUseCaseError.Generic)
         }
+
     }
 }

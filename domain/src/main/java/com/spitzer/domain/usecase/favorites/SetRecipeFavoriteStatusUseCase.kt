@@ -1,5 +1,6 @@
 package com.spitzer.domain.usecase.favorites
 
+import android.database.sqlite.SQLiteException
 import com.spitzer.contracts.RecipeRepository
 import com.spitzer.domain.utils.WrappedResult
 import javax.inject.Inject
@@ -18,7 +19,9 @@ class SetRecipeFavoriteStatusUseCase @Inject constructor(
         return try {
             repository.setRecipeFavorite(id, isFavorite)
             WrappedResult.Success(Unit)
-        } catch (e: Throwable) {
+        } catch (e: SQLiteException) {
+            WrappedResult.Error(SetRecipeFavoriteStatusUseCaseError.Generic)
+        } catch (e: IndexOutOfBoundsException) {
             WrappedResult.Error(SetRecipeFavoriteStatusUseCaseError.Generic)
         }
     }

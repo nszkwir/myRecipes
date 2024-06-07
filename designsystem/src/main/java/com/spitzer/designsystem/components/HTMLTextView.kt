@@ -68,16 +68,20 @@ fun LinkHTMLTextView(
     underlined: Boolean = true,
     maxLines: Int = Integer.MAX_VALUE,
 ) {
-    val displayText = try {
-        text ?: urlString
-    } catch (e: Exception) {
-        ""
+    val displayText = text ?: urlString
+    val uri = try {
+        Uri.parse(urlString)
+    } catch (e: NullPointerException) {
+        null
     }
+
     val context = LocalContext.current
     HTMLTextView(
         modifier = modifier.clickable {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(urlString))
-            context.startActivity(intent)
+            uri?.let {
+                val intent = Intent(Intent.ACTION_VIEW, it)
+                context.startActivity(intent)
+            }
         },
         text = if (underlined) "<u>$displayText</u>" else displayText,
         color = color,

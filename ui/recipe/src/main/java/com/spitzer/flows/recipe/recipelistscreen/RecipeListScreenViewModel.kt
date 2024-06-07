@@ -216,7 +216,7 @@ class RecipeListScreenViewModel @Inject constructor(
                 return RecipeListScreenBottomSheetViewState(
                     funnelViewState = RecipeListScreenFunnelViewState(
                         searchCriteriaTitle = applicationContext.getString(R.string.recipe_list_screen_funnel_search_criteria_title),
-                        searchCriteriaPillsViewStates = SearchCriteria.values()
+                        searchCriteriaPillsViewStates = SearchCriteria.entries
                             .map { searchCriteria ->
                                 PillViewState(
                                     text = mapSearchCriteriaTitle(searchCriteria),
@@ -228,7 +228,7 @@ class RecipeListScreenViewModel @Inject constructor(
                                 )
                             },
                         sortCriteriaTitle = applicationContext.getString(R.string.recipe_list_screen_funnel_sort_criteria_title),
-                        sortCriteriaPillsViewStates = SortCriteria.values().map { sortCriteria ->
+                        sortCriteriaPillsViewStates = SortCriteria.entries.map { sortCriteria ->
                             PillViewState(
                                 text = mapSortCriteriaTitle(sortCriteria),
                                 isSelected = temporalDataStore.selectedSortCriteria == sortCriteria,
@@ -239,7 +239,7 @@ class RecipeListScreenViewModel @Inject constructor(
                             )
                         },
                         sortOrderTitle = applicationContext.getString(R.string.recipe_list_screen_funnel_sort_order_title),
-                        sortOrderPillsViewStates = SortOrder.values().map { sortOrder ->
+                        sortOrderPillsViewStates = SortOrder.entries.map { sortOrder ->
                             PillViewState(
                                 text = mapSortOrderTitle(sortOrder),
                                 isSelected = temporalDataStore.selectedSortOrder == sortOrder,
