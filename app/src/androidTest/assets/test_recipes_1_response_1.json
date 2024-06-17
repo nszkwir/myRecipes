@@ -1,0 +1,95 @@
+{
+  "results": [
+    {
+      "id": 1,
+      "title": "Recipe 1",
+      "image": "",
+      "summary": "Summary"
+    },
+    {
+      "id": 2,
+      "title": "Recipe 2",
+      "image": "",
+      "summary": "Summary"
+    },
+    {
+      "id": 3,
+      "title": "Recipe 3",
+      "image": "",
+      "summary": "Summary"
+    },
+    {
+      "id": 4,
+      "title": "Recipe 4",
+      "image": "",
+      "summary": "Summary"
+    },
+    {
+      "id": 5,
+      "title": "Recipe 5",
+      "image": "",
+      "summary": "Summary"
+    },
+    {
+      "id": 6,
+      "title": "Recipe 6",
+      "image": "",
+      "summary": "Summary"
+    },
+    {
+      "id": 7,
+      "title": "Recipe 7",
+      "image": "",
+      "summary": "Summary"
+    },
+    {
+      "id": 8,
+      "title": "Recipe 8",
+      "image": "",
+      "summary": "Summary"
+    },
+    {
+      "id": 9,
+      "title": "Recipe 9",
+      "image": "",
+      "summary": "Summary"
+    },
+    {
+      "id": 10,
+      "title": "Recipe 10",
+      "image": "",
+      "summary": "Summary"
+    },
+    {
+      "id": 11,
+      "title": "Recipe 11",
+      "image": "",
+      "summary": "Summary"
+    },
+    {
+      "id": 12,
+      "title": "Recipe 12",
+      "image": "",
+      "summary": "Summary"
+    },
+    {
+      "id": 13,
+      "title": "Recipe 13",
+      "image": "",
+      "summary": "Summary"
+    },
+    {
+      "id": 14,
+      "title": "Recipe 14",
+      "image": "",
+      "summary": "Summary"
+    },
+    {
+      "id": 15,
+      "title": "Recipe 15",
+      "image": "",
+      "summary": "Summary"
+    }
+  ],
+  "totalResults": 20
+}

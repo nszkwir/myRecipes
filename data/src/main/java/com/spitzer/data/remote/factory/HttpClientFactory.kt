@@ -7,25 +7,23 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
 
-class HTTPClientFactory(
-    @ApplicationContext private val applicationContext: Context
-) {
-    private var okHttpClient: OkHttpClient? = null
-    val client: OkHttpClient
-        get() {
-            okHttpClient?.let { return it }
+interface HTTPClientFactory {
+    fun provideOkHttpClient(): OkHttpClient
+}
 
-            val timeout: Long = 30
-            val okHttpClient = OkHttpClient().newBuilder()
-                .retryOnConnectionFailure(true)
-                .connectTimeout(timeout, TimeUnit.SECONDS)
-                .readTimeout(timeout, TimeUnit.SECONDS)
-                .followRedirects(true)
-                .followSslRedirects(true)
-                .addInterceptor(NetworkConnectionInterceptor(applicationContext))
-                .addInterceptor(APIKeyRequestInterceptor)
-                .build()
-            this.okHttpClient = okHttpClient
-            return okHttpClient
-        }
+class HTTPClientFactoryImpl(
+    @ApplicationContext private val applicationContext: Context
+) : HTTPClientFactory {
+    override fun provideOkHttpClient(): OkHttpClient {
+        val timeout: Long = 30
+        return OkHttpClient().newBuilder()
+            .retryOnConnectionFailure(true)
+            .connectTimeout(timeout, TimeUnit.SECONDS)
+            .readTimeout(timeout, TimeUnit.SECONDS)
+            .followRedirects(true)
+            .followSslRedirects(true)
+            .addInterceptor(NetworkConnectionInterceptor(applicationContext))
+            .addInterceptor(APIKeyRequestInterceptor)
+            .build()
+    }
 }

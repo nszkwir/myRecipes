@@ -1,13 +1,12 @@
-package com.spitzer.data.remote.factory
+package com.spitzer.data.factory
 
+import com.spitzer.data.remote.factory.HTTPClientFactory
+import com.spitzer.data.remote.factory.MoshiFactory
+import com.spitzer.data.remote.factory.ServiceFactory
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
-interface ServiceFactory {
-    fun provideRetrofitClient(): Retrofit
-}
-
-class ServiceFactoryImpl(
+class TestServiceFactory(
     private val httpClientFactory: HTTPClientFactory,
     private val baseUrl: String
 ) : ServiceFactory {

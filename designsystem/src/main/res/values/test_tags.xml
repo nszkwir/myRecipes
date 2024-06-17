@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="errorView_TestTag">errorView_TestTag</string>
+    <string name="errorView_RetryButton_TestTag">errorView_RetryButton_TestTag</string>
+    <string name="errorView_CancelButton_TestTag">errorView_CancelButton_TestTag</string>
+</resources>

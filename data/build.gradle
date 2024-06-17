@@ -80,5 +80,15 @@ dependencies {
     testImplementation("io.mockk:mockk:$mockk_version")
 
     androidTestImplementation("androidx.test.ext:junit:$ext_junit_version")
-    androidTestImplementation("androidx.test.espresso:espresso-core:$espresso_core_version")
+    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version")
+    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_version")
+    androidTestImplementation("androidx.test:core:$test_core_version")
+    androidTestImplementation("androidx.test:core-ktx:$test_core_version")
+    androidTestImplementation("androidx.test:rules:$test_core_version")
+    androidTestImplementation("com.google.dagger:hilt-android-testing:$hilt_version")
+    kspAndroidTest("com.google.dagger:hilt-compiler:$hilt_version")
+    androidTestImplementation("com.squareup.okhttp3:mockwebserver:$okhttp_version")
+    androidTestImplementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+    androidTestImplementation "com.squareup.retrofit2:converter-moshi:$retrofit_version"
+    androidTestImplementation "com.squareup.okhttp3:logging-interceptor:$okhttp_version"
 }

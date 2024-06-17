@@ -1,0 +1,35 @@
+{
+  "results": [
+    {
+      "id": 16,
+      "title": "Recipe 16",
+      "image": "",
+      "summary": "Summary"
+    },
+    {
+      "id": 17,
+      "title": "Recipe 17",
+      "image": "",
+      "summary": "Summary"
+    },
+    {
+      "id": 18,
+      "title": "Recipe 18",
+      "image": "",
+      "summary": "Summary"
+    },
+    {
+      "id": 19,
+      "title": "Recipe 19",
+      "image": "",
+      "summary": "Summary"
+    },
+    {
+      "id": 20,
+      "title": "Recipe 20",
+      "image": "",
+      "summary": "Summary"
+    }
+  ],
+  "totalResults": 20
+}
